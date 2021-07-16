@@ -1,14 +1,19 @@
+html {
+    background: linear-gradient(#43cea2, #185a9d)
+}
+
 body {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    height: 100vh;
 }
 
 header {
     font-size: 4rem;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
+    margin-top: 0rem;
+    margin-bottom: 3rem;
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     font-weight: bold;
 }
@@ -22,7 +27,7 @@ th {
     border: 3px solid black;
     border-collapse: collapse;
     vertical-align: middle;
-    font-size: 1.8rem;
+    font-size: 5rem;
     width: 17vw;
     height: 17vh;
 }
