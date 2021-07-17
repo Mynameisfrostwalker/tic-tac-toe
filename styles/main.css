@@ -25,6 +25,7 @@ header {
 @media screen and (max-width: 800px) {
     header {
         font-size: 3rem;
+        margin-bottom: 0rem;
     }
 }
 
@@ -178,10 +179,33 @@ button {
     justify-content: center;
 }
 
+div {
+    margin: 1rem;
+}
+
+#display {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    font-size: 4rem;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-style: italic;
+    font-weight: bold;
+}
+
 @media screen and (max-width:800px) {
     #inputcontrol,
-    #mode {
+    #mode,
+    #display {
         flex-direction: column;
+    }
+    #display {
+        font-size: 3rem;
+        word-wrap: break-word;
+    }
+    div {
+        margin-top: 0rem;
     }
 }
 

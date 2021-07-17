@@ -44,7 +44,7 @@ const displayControl = (
 )()
 
 
-const gameStart = (name1, name2) => {
+const playersMaker = (name1, name2) => {
     const player1 = personFactory(`${name1}`, "x");
     const player2 = personFactory(`${name2}`, "o")
     return { player1, player2 }
@@ -56,7 +56,7 @@ const addMark = (
         let x = 1;
         let currentPlayer;
         const fun = (event) => {
-            let players = gameStart(game.playerName1, game.playerName2)
+            let players = playersMaker(game.playerName1, game.playerName2)
             let index = parseInt(event.target.classList.value) - 1;
             if (gameBoard.gameBoardArr[index] === null) {
                 if (x % 2 == 0) {
@@ -79,25 +79,25 @@ const gameOver = (
     function() {
         const check = () => {
             let arr = [...gameBoard.gameBoardArr];
-            if ((arr[0] == arr[1]) && (arr[1] == arr[2]) && (arr[2] == gameStart().player1.marker) ||
-                (arr[3] == arr[4]) && (arr[4] == arr[5]) && (arr[5] == gameStart().player1.marker) ||
-                (arr[6] == arr[7]) && (arr[7] == arr[8]) && (arr[8] == gameStart().player1.marker) ||
-                (arr[0] == arr[3]) && (arr[3] == arr[6]) && (arr[6] == gameStart().player1.marker) ||
-                (arr[1] == arr[4]) && (arr[4] == arr[7]) && (arr[7] == gameStart().player1.marker) ||
-                (arr[2] == arr[5]) && (arr[5] == arr[8]) && (arr[8] == gameStart().player1.marker) ||
-                (arr[0] == arr[4]) && (arr[4] == arr[8]) && (arr[8] == gameStart().player1.marker) ||
-                (arr[2] == arr[4]) && (arr[4] == arr[6]) && (arr[6] == gameStart().player1.marker)) {
+            if ((arr[0] == arr[1]) && (arr[1] == arr[2]) && (arr[2] == playersMaker().player1.marker) ||
+                (arr[3] == arr[4]) && (arr[4] == arr[5]) && (arr[5] == playersMaker().player1.marker) ||
+                (arr[6] == arr[7]) && (arr[7] == arr[8]) && (arr[8] == playersMaker().player1.marker) ||
+                (arr[0] == arr[3]) && (arr[3] == arr[6]) && (arr[6] == playersMaker().player1.marker) ||
+                (arr[1] == arr[4]) && (arr[4] == arr[7]) && (arr[7] == playersMaker().player1.marker) ||
+                (arr[2] == arr[5]) && (arr[5] == arr[8]) && (arr[8] == playersMaker().player1.marker) ||
+                (arr[0] == arr[4]) && (arr[4] == arr[8]) && (arr[8] == playersMaker().player1.marker) ||
+                (arr[2] == arr[4]) && (arr[4] == arr[6]) && (arr[6] == playersMaker().player1.marker)) {
                 gameButtons.forEach(button => {
                     button.removeEventListener('click', addMark.fun);
                 })
-            } else if ((arr[0] == arr[1]) && (arr[1] == arr[2]) && (arr[2] == gameStart().player2.marker) ||
-                (arr[3] == arr[4]) && (arr[4] == arr[5]) && (arr[5] == gameStart().player2.marker) ||
-                (arr[6] == arr[7]) && (arr[7] == arr[8]) && (arr[8] == gameStart().player2.marker) ||
-                (arr[0] == arr[3]) && (arr[3] == arr[6]) && (arr[6] == gameStart().player2.marker) ||
-                (arr[1] == arr[4]) && (arr[4] == arr[7]) && (arr[7] == gameStart().player2.marker) ||
-                (arr[2] == arr[5]) && (arr[5] == arr[8]) && (arr[8] == gameStart().player2.marker) ||
-                (arr[0] == arr[4]) && (arr[4] == arr[8]) && (arr[8] == gameStart().player2.marker) ||
-                (arr[2] == arr[4]) && (arr[4] == arr[6]) && (arr[6] == gameStart().player2.marker)) {
+            } else if ((arr[0] == arr[1]) && (arr[1] == arr[2]) && (arr[2] == playersMaker().player2.marker) ||
+                (arr[3] == arr[4]) && (arr[4] == arr[5]) && (arr[5] == playersMaker().player2.marker) ||
+                (arr[6] == arr[7]) && (arr[7] == arr[8]) && (arr[8] == playersMaker().player2.marker) ||
+                (arr[0] == arr[3]) && (arr[3] == arr[6]) && (arr[6] == playersMaker().player2.marker) ||
+                (arr[1] == arr[4]) && (arr[4] == arr[7]) && (arr[7] == playersMaker().player2.marker) ||
+                (arr[2] == arr[5]) && (arr[5] == arr[8]) && (arr[8] == playersMaker().player2.marker) ||
+                (arr[0] == arr[4]) && (arr[4] == arr[8]) && (arr[8] == playersMaker().player2.marker) ||
+                (arr[2] == arr[4]) && (arr[4] == arr[6]) && (arr[6] == playersMaker().player2.marker)) {
                 gameButtons.forEach(button => {
                     button.removeEventListener('click', addMark.fun)
                 })
@@ -113,21 +113,43 @@ const gameOver = (
 
 const game = (
     function() {
-        const realGameBoard = document.querySelector('table')
+        const realGameBoard = document.querySelector('table');
+        const body = document.querySelector('body');
+        const gameboardContainer = document.querySelector("div#gameboard");
+        const display = document.createElement('div');
+        display.setAttribute('id', "display");
+        const player1Display = document.createElement('div');
+        const player2Display = document.createElement('div');
+        const vsDisplay = document.createElement('div')
+        const para1 = document.createElement('p');
+        const para2 = document.createElement('p');
+        const vs = document.createElement('p');
         let playerName1;
         let playerName2;
         const start = (event) => {
-            const input1 = document.querySelector('#input1');
-            const input2 = document.querySelector('#input2');
-            playerName1 = input1.value;
-            playerName2 = input2.value;
-            input1.parentNode.remove();
-            event.target.parentNode.remove();
-            realGameBoard.classList.add('visible')
-            const gameButtons = document.querySelectorAll('th');
-            gameButtons.forEach(button => {
-                button.addEventListener('click', addMark.fun)
-            })
+            setTimeout(function() {
+                const input1 = document.querySelector('#input1');
+                const input2 = document.querySelector('#input2');
+                playerName1 = input1.value;
+                playerName2 = input2.value;
+                input1.parentNode.remove();
+                event.target.parentNode.remove();
+                realGameBoard.classList.add('visible')
+                const gameButtons = document.querySelectorAll('th');
+                gameButtons.forEach(button => {
+                    button.addEventListener('click', addMark.fun)
+                    para1.textContent = playerName1;
+                    para2.textContent = playerName2;
+                    vs.textContent = "Vs";
+                    player1Display.appendChild(para1);
+                    player2Display.appendChild(para2);
+                    vsDisplay.appendChild(vs);
+                    display.appendChild(player1Display);
+                    display.appendChild(vsDisplay);
+                    display.appendChild(player2Display);
+                    body.insertBefore(display, gameboardContainer)
+                })
+            }, 600)
         }
         return { start, playerName1, playerName2 }
     }
@@ -157,10 +179,12 @@ const choseNames = (
         inputs.setAttribute('id', "inputcontrol")
         center.appendChild(start);
         const playerSelection = (event) => {
-            event.target.parentNode.remove()
-            div.appendChild(inputs)
-            div.appendChild(center);
-            start.addEventListener('click', game.start)
+            setTimeout(function() {
+                event.target.parentNode.remove()
+                div.appendChild(inputs)
+                div.appendChild(center);
+                start.addEventListener('click', game.start)
+            }, 600)
         }
         return { playerSelection }
     }
