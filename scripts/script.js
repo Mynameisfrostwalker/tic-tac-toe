@@ -67,23 +67,26 @@ const playersMaker = (name1, name2) => {
 //adds marker to gameBoard
 const addMark = (
     function() {
-        let x = 2;
+        let turn = [null, null];
         let currentPlayer;
         const fun = (event) => {
             let index = parseInt(event.target.classList.value) - 1;
             if (gameBoard.gameBoardArr[index] === null) {
-                if (x % 2 == 0) {
+                if (turn.length % 2 == 0) {
                     currentPlayer = game.gamePlayers[0].player1;
-                } else {
+                } else if (turn.length % 2 !== 0 && game.gamePlayers[0].player2.name !== "AI") {
                     currentPlayer = game.gamePlayers[0].player2;
                 }
                 gameBoard.gameBoardArr[index] = currentPlayer.marker;
-                x++
+                turn.push(null);
+                displayControl.update();
+                if (game.gamePlayers[0].player2.name === "AI") {
+                    easyMode.play(addMark.turn.length);
+                }
             }
-            displayControl.update()
             gameOver.check()
         }
-        return { fun }
+        return { fun, turn }
     }
 )()
 
@@ -215,6 +218,28 @@ const game = (
             }
         }
         return { start, gamePlayers, end }
+    }
+)()
+
+
+const easyMode = (
+    function() {
+        const play = (aiturn) => {
+            gameOver.check()
+            if (aiturn % 2 !== 0) {
+                const available = [];
+                for (let i = 0; i < gameBoard.gameBoardArr.length; i++) {
+                    if (gameBoard.gameBoardArr[i] === null) {
+                        available.push(i);
+                    }
+                }
+                let random = Math.floor(Math.random() * available.length);
+                gameBoard.gameBoardArr[available[random]] = game.gamePlayers[0].player2.marker;
+                displayControl.update();
+                addMark.turn.push(null);
+            }
+        }
+        return { play }
     }
 )()
 
