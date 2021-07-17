@@ -120,6 +120,7 @@ const gameOver = (
     }
 )()
 
+//displays game
 const game = (
     function() {
         const main = document.querySelector('main')
@@ -146,31 +147,37 @@ const game = (
         let gamePlayers = [];
         const gameButtons = document.querySelectorAll('th');
         const start = (event) => {
-            const input1 = document.querySelector('#input1');
-            const input2 = document.querySelector('#input2');
-            playerName1 = input1.value;
-            playerName2 = input2.value;
-            gamePlayers.push(playersMaker(playerName1, playerName2));
-            input1.parentNode.remove();
-            event.target.parentNode.remove();
-            realGameBoard.classList.add('visible')
-            reset.classList.add('visible')
-            gameButtons.forEach(button => {
-                button.addEventListener('click', addMark.fun);
-            });
-            reset.onclick = chooseMode.restart;
-            para1.textContent = playerName1;
-            para2.textContent = playerName2;
-            vs.textContent = "Vs";
-            player1Display.appendChild(para1);
-            player2Display.appendChild(para2);
-            vsDisplay.appendChild(vs);
-            player1Display.classList.add('background')
-            display.appendChild(player1Display);
-            display.appendChild(vsDisplay);
-            display.appendChild(player2Display);
-            main.insertBefore(display, gameboardContainer)
-            display.classList.add('flex')
+            setTimeout(() => {
+                const input1 = document.querySelector('#input1');
+                const input2 = document.querySelector('#input2');
+                playerName1 = input1.value;
+                if (input2 === null) {
+                    playerName2 = "AI"
+                } else {
+                    playerName2 = input2.value;
+                }
+                gamePlayers.push(playersMaker(playerName1, playerName2));
+                input1.parentNode.remove();
+                event.target.parentNode.remove();
+                realGameBoard.classList.add('visible')
+                reset.classList.add('visible')
+                gameButtons.forEach(button => {
+                    button.addEventListener('click', addMark.fun);
+                });
+                reset.onclick = chooseMode.restart;
+                para1.textContent = playerName1;
+                para2.textContent = playerName2;
+                vs.textContent = "Vs";
+                player1Display.appendChild(para1);
+                player2Display.appendChild(para2);
+                vsDisplay.appendChild(vs);
+                player1Display.classList.add('background')
+                display.appendChild(player1Display);
+                display.appendChild(vsDisplay);
+                display.appendChild(player2Display);
+                main.insertBefore(display, gameboardContainer)
+                display.classList.add('flex')
+            }, 520)
         }
         const end = (name) => {
             gameButtons.forEach(button => {
@@ -211,6 +218,7 @@ const game = (
     }
 )()
 
+//displays playername selection
 const choseNames = (
     function() {
         const div = document.querySelector('div#gameboard');
@@ -222,30 +230,66 @@ const choseNames = (
         const center = document.createElement('div');
         center.setAttribute('id', "center");
         input1.setAttribute('type', 'text');
+        input1.setAttribute('required', '');
+        input2.setAttribute('required', '')
         input2.setAttribute('type', 'text');
         input1.setAttribute('placeholder', "Enter Player 1 name");
         input2.setAttribute('placeholder', "Enter Player 2 name");
         input1.setAttribute('id', "input1");
         input2.setAttribute('id', "input2");
-        inputs.appendChild(input1);
-        inputs.appendChild(input2);
         start.classList.add('button');
         span.textContent = "Start";
         start.appendChild(span);
         inputs.setAttribute('id', "inputcontrol")
+        const select = document.createElement('select');
+        select.setAttribute('id', "modes");
+        select.setAttribute('type', "modes")
+        const nonOption = document.createElement('option');
+        const options1 = document.createElement('option');
+        const options2 = document.createElement('option');
+        const options3 = document.createElement('option');
+        select.appendChild(nonOption);
+        nonOption.setAttribute('disabled', '');
+        nonOption.setAttribute('currentvalue', '');
+        nonOption.textContent = 'Choose Ai Difficulty';
+        select.appendChild(options1);
+        options1.setAttribute('value', 'Easy');
+        options1.textContent = 'Easy';
+        select.appendChild(options2);
+        options2.setAttribute('value', 'Medium');
+        options2.textContent = 'Medium';
+        select.appendChild(options3);
+        options3.setAttribute('value', 'Hard');
+        options3.textContent = 'Hard';
         const playerSelection = (event) => {
             setTimeout(function() {
                 event.target.parentNode.remove();
+                select.remove();
+                inputs.appendChild(input1);
+                inputs.appendChild(input2);
                 center.appendChild(start);
                 div.appendChild(inputs)
                 div.appendChild(center);
                 start.addEventListener('click', game.start)
             }, 520)
         }
-        return { playerSelection }
+        const aiSelection = (event) => {
+            setTimeout(function() {
+                event.target.parentNode.remove();
+                input2.remove();
+                center.appendChild(start);
+                inputs.appendChild(input1);
+                inputs.appendChild(select);
+                div.appendChild(inputs);
+                div.appendChild(center);
+                start.addEventListener('click', game.start)
+            }, 520)
+        }
+        return { playerSelection, aiSelection }
     }
 )()
 
+//displays choose name page
 const chooseMode = (
     function() {
         const realGameBoard = document.querySelector('table');
@@ -264,6 +308,7 @@ const chooseMode = (
             mode.appendChild(ai);
             div.appendChild(mode);
             players.addEventListener('click', choseNames.playerSelection)
+            ai.addEventListener('click', choseNames.aiSelection)
         }
         const restart = () => {
             const display = document.querySelector('#display');
