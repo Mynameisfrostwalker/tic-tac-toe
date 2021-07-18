@@ -80,11 +80,11 @@ const addMark = (
                 gameBoard.gameBoardArr[index] = currentPlayer.marker;
                 turn.push(null);
                 displayControl.update();
-                if (game.gameMode[0] === 'Easy') {
+                if (game.gameMode[0] === 'Easy' && game.gamePlayers[0].player2.name == "AI") {
                     easyMode.play(addMark.turn.length);
-                } else if (game.gameMode[0] === 'Medium') {
+                } else if (game.gameMode[0] === 'Medium' && game.gamePlayers[0].player2.name == "AI") {
                     mediumMode.play(addMark.turn.length);
-                } else if (game.gameMode[0] === 'Hard') {
+                } else if (game.gameMode[0] === 'Hard' && game.gamePlayers[0].player2.name == "AI") {
                     hardMode.play(addMark.turn.length)
                 }
             }
@@ -166,7 +166,7 @@ const game = (
                 } else {
                     playerName2 = input2.value;
                 }
-                gamePlayers.push(playersMaker(playerName1, playerName2));
+                gamePlayers[0] = playersMaker(playerName1, playerName2);
                 input1.parentNode.remove();
                 event.target.parentNode.remove();
                 realGameBoard.classList.add('visible')
@@ -321,6 +321,7 @@ const chooseMode = (
             ai.addEventListener('click', choseNames.aiSelection)
         }
         const restart = () => {
+            gameBoard.wipe();
             const display = document.querySelector('#display');
             realGameBoard.classList.remove('visible');
             reset.classList.remove('visible');
