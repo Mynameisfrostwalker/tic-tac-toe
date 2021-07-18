@@ -80,8 +80,12 @@ const addMark = (
                 gameBoard.gameBoardArr[index] = currentPlayer.marker;
                 turn.push(null);
                 displayControl.update();
-                if (game.gamePlayers[0].player2.name === "AI") {
+                if (game.gameMode[0] === 'Easy') {
                     easyMode.play(addMark.turn.length);
+                } else if (game.gameMode[0] === 'Medium') {
+                    mediumMode.play(addMark.turn.length);
+                } else if (game.gameMode[0] === 'Hard') {
+                    hardMode.play(addMark.turn.length)
                 }
             }
             gameOver.check()
@@ -148,14 +152,17 @@ const game = (
         let playerName1;
         let playerName2;
         let gamePlayers = [];
+        const gameMode = [];
         const gameButtons = document.querySelectorAll('th');
         const start = (event) => {
             setTimeout(() => {
                 const input1 = document.querySelector('#input1');
                 const input2 = document.querySelector('#input2');
+                const mode = document.querySelector('select')
                 playerName1 = input1.value;
                 if (input2 === null) {
                     playerName2 = "AI"
+                    gameMode[0] = mode.value;
                 } else {
                     playerName2 = input2.value;
                 }
@@ -217,29 +224,7 @@ const game = (
                 }, 2000)
             }
         }
-        return { start, gamePlayers, end }
-    }
-)()
-
-
-const easyMode = (
-    function() {
-        const play = (aiturn) => {
-            gameOver.check()
-            if (aiturn % 2 !== 0) {
-                const available = [];
-                for (let i = 0; i < gameBoard.gameBoardArr.length; i++) {
-                    if (gameBoard.gameBoardArr[i] === null) {
-                        available.push(i);
-                    }
-                }
-                let random = Math.floor(Math.random() * available.length);
-                gameBoard.gameBoardArr[available[random]] = game.gamePlayers[0].player2.marker;
-                displayControl.update();
-                addMark.turn.push(null);
-            }
-        }
-        return { play }
+        return { start, gamePlayers, end, gameMode }
     }
 )()
 
@@ -346,3 +331,142 @@ const chooseMode = (
     }
 )()
 chooseMode.begin()
+
+const easyMode = (
+    function() {
+        const play = (aiturn) => {
+            if (aiturn % 2 !== 0) {
+                const available = [];
+                for (let i = 0; i < gameBoard.gameBoardArr.length; i++) {
+                    if (gameBoard.gameBoardArr[i] === null) {
+                        available.push(i);
+                    }
+                }
+                let random = Math.floor(Math.random() * available.length);
+                gameBoard.gameBoardArr[available[random]] = game.gamePlayers[0].player2.marker;
+                displayControl.update();
+                addMark.turn.push(null);
+            }
+        }
+        return { play }
+    }
+)()
+
+const hardMode = (
+    function() {
+        const play = (aiturn) => {
+            if (aiturn % 2 !== 0) {
+                function movesLeft(board) {
+                    for (let i = 0; i < board.length; i++) {
+                        if (board[i] === null) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+
+                function evaluate(arr) {
+                    if ((arr[0] == arr[1]) && (arr[1] == arr[2]) && (arr[2] == game.gamePlayers[0].player1.marker) ||
+                        (arr[3] == arr[4]) && (arr[4] == arr[5]) && (arr[5] == game.gamePlayers[0].player1.marker) ||
+                        (arr[6] == arr[7]) && (arr[7] == arr[8]) && (arr[8] == game.gamePlayers[0].player1.marker) ||
+                        (arr[0] == arr[3]) && (arr[3] == arr[6]) && (arr[6] == game.gamePlayers[0].player1.marker) ||
+                        (arr[1] == arr[4]) && (arr[4] == arr[7]) && (arr[7] == game.gamePlayers[0].player1.marker) ||
+                        (arr[2] == arr[5]) && (arr[5] == arr[8]) && (arr[8] == game.gamePlayers[0].player1.marker) ||
+                        (arr[0] == arr[4]) && (arr[4] == arr[8]) && (arr[8] == game.gamePlayers[0].player1.marker) ||
+                        (arr[2] == arr[4]) && (arr[4] == arr[6]) && (arr[6] == game.gamePlayers[0].player1.marker)) {
+                        return -10;
+                    } else if ((arr[0] == arr[1]) && (arr[1] == arr[2]) && (arr[2] == game.gamePlayers[0].player2.marker) ||
+                        (arr[3] == arr[4]) && (arr[4] == arr[5]) && (arr[5] == game.gamePlayers[0].player2.marker) ||
+                        (arr[6] == arr[7]) && (arr[7] == arr[8]) && (arr[8] == game.gamePlayers[0].player2.marker) ||
+                        (arr[0] == arr[3]) && (arr[3] == arr[6]) && (arr[6] == game.gamePlayers[0].player2.marker) ||
+                        (arr[1] == arr[4]) && (arr[4] == arr[7]) && (arr[7] == game.gamePlayers[0].player2.marker) ||
+                        (arr[2] == arr[5]) && (arr[5] == arr[8]) && (arr[8] == game.gamePlayers[0].player2.marker) ||
+                        (arr[0] == arr[4]) && (arr[4] == arr[8]) && (arr[8] == game.gamePlayers[0].player2.marker) ||
+                        (arr[2] == arr[4]) && (arr[4] == arr[6]) && (arr[6] == game.gamePlayers[0].player2.marker)) {
+                        return 10;
+                    } else if (!arr.some(item => item === null)) {
+                        return 0;
+                    }
+                }
+
+                function minimax(board, depth, player) {
+                    let score = evaluate(board);
+
+                    if (score === 10) {
+                        return score - depth;
+                    }
+
+                    if (score === -10) {
+                        return score + depth;
+                    }
+
+                    if (movesLeft(board) === false) {
+                        return 0;
+                    }
+
+                    if (player === "aiPlayer") {
+                        let best = -1000;
+                        for (let i = 0; i < 9; i++) {
+                            if (board[i] === null) {
+                                board[i] = "o"
+                                best = Math.max(best, minimax(board, depth + 1, "humanPlayer"));
+                                board[i] = null;
+                            }
+                        }
+                        return best;
+                    } else if (player === "humanPlayer") {
+                        let best = 1000;
+                        for (let i = 0; i < 9; i++) {
+                            if (board[i] === null) {
+                                board[i] = "x"
+                                best = Math.min(best, minimax(board, depth + 1, 'aiPlayer'));
+                                board[i] = null;
+                            }
+                        }
+                        return best
+                    }
+                }
+
+                function findBest(board) {
+                    let bestVal = -1000;
+                    let bestMove = 0;
+                    for (let i = 0; i < 9; i++) {
+                        if (board[i] === null) {
+                            board[i] = "o";
+                            let moveVal = minimax(board, 0, 'humanPlayer');
+                            board[i] = null;
+
+                            if (moveVal > bestVal) {
+                                bestMove = i;
+                                bestVal = moveVal;
+                            }
+                        }
+                    }
+                    return bestMove
+                }
+                let extra = [...gameBoard.gameBoardArr]
+                let index = findBest(extra);
+                gameBoard.gameBoardArr[index] = game.gamePlayers[0].player2.marker;
+                displayControl.update();
+                addMark.turn.push(null);
+            }
+        }
+        return { play }
+    }
+)()
+
+const mediumMode = (
+    function() {
+        const play = (aiturn) => {
+            if (aiturn % 2 !== 0) {
+                let chance = Math.floor(Math.random() * 100);
+                if (chance > 50) {
+                    hardMode.play(aiturn);
+                } else {
+                    easyMode.play(aiturn);
+                }
+            }
+        }
+        return { play }
+    }
+)()
