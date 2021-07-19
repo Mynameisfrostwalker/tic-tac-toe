@@ -30,8 +30,6 @@ const personFactory = (player, mark) => {
 //cycles throuch gameboard array and changes corresponding table cell
 const displayControl = (
     function() {
-        const player1Display = document.querySelector('#player1');
-        const player2Display = document.querySelector('#player2');
         let x = 0;
         const ths = document.querySelectorAll('th');
         const update = () => {
@@ -88,7 +86,7 @@ const addMark = (
                     hardMode.play(addMark.turn.length)
                 }
             }
-            gameOver.check()
+            gameOver.check();
         }
         return { fun, turn }
     }
@@ -181,7 +179,7 @@ const game = (
                 player1Display.appendChild(para1);
                 player2Display.appendChild(para2);
                 vsDisplay.appendChild(vs);
-                player1Display.classList.add('background')
+                player1Display.classList.add('background');
                 display.appendChild(player1Display);
                 display.appendChild(vsDisplay);
                 display.appendChild(player2Display);
@@ -321,12 +319,7 @@ const chooseMode = (
             ai.addEventListener('click', choseNames.aiSelection)
         }
         const restart = () => {
-            gameBoard.wipe();
-            const display = document.querySelector('#display');
-            realGameBoard.classList.remove('visible');
-            reset.classList.remove('visible');
-            display.classList.remove('flex');
-            begin()
+            window.location.reload();
         }
         return { begin, restart }
     }
@@ -447,9 +440,11 @@ const hardMode = (
                 }
                 let extra = [...gameBoard.gameBoardArr]
                 let index = findBest(extra);
-                gameBoard.gameBoardArr[index] = game.gamePlayers[0].player2.marker;
-                displayControl.update();
-                addMark.turn.push(null);
+                if (gameBoard.gameBoardArr[index] === null) {
+                    gameBoard.gameBoardArr[index] = game.gamePlayers[0].player2.marker;
+                    displayControl.update();
+                    addMark.turn.push(null);
+                }
             }
         }
         return { play }
